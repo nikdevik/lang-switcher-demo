@@ -28,6 +28,13 @@
     .goog-te-banner-frame.skiptranslate {
       display: none !important;
     }
+    #gtx-trans {
+    display: none !important;
+  }
+
+  body > .skiptranslate {
+    display: none !important;
+  }
   </style>
 </head>
 <body>
@@ -113,11 +120,17 @@
   }
 
   function removeTranslateIcon() {
-    const translateIcon = document.getElementById('gtx-trans');
-    if (translateIcon) {
-      translateIcon.remove();
-    }
+  const icon = document.getElementById('gtx-trans');
+  if (icon) {
+    icon.remove();
   }
+
+  // Also try to hide any outer wrappers
+  const skip = document.querySelector('.skiptranslate');
+  if (skip) {
+    skip.style.display = 'none';
+  }
+}
 
   document.addEventListener("DOMContentLoaded", function () {
     // Handle dropdown click
@@ -144,6 +157,13 @@
     const observer = new MutationObserver(removeTranslateIcon);
     observer.observe(document.body, { childList: true, subtree: true });
 
+    // Repeatedly try to remove it since Google injects it at random times
+    const intervalId = setInterval(removeTranslateIcon, 500);
+
+    // Also observe new DOM nodes in case Translate reappears dynamically
+    const observer = new MutationObserver(removeTranslateIcon);
+    observer.observe(document.body, { childList: true, subtree: true });
+    
     // Initial cleanup
     hideGoogleTranslateElements();
     removeTranslateIcon();
