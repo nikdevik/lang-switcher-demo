@@ -120,10 +120,10 @@
   }
 
   function triggerTranslation(lang) {
-  const fromLang = 'zh-TW'; // original language of the page
-  const targetValue = `${lang}|${fromLang}`;
+    const fromLang = 'zh-TW'; // original language of the page
+    const targetValue = `${lang}|${fromLang}`;
 
-  const interval = setInterval(() => {
+    const interval = setInterval(() => {
     const selectField = document.querySelector(".goog-te-combo");
     if (selectField) {
       const foundOption = Array.from(selectField.options).find(option => option.value.startsWith(lang));
