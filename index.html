@@ -28,9 +28,10 @@
     .goog-te-banner-frame.skiptranslate {
       display: none !important;
     }
+    
     #gtx-trans {
     display: none !important;
-  }
+    }
     
   </style>
 </head>
@@ -72,7 +73,6 @@
 <!-- Google Translate container -->
 <div id="google_translate_element" style="display: none;"></div>
 
-<!-- Scripts -->
 <script type="text/javascript">
   function googleTranslateElementInit() {
     new google.translate.TranslateElement(
@@ -82,13 +82,14 @@
   }
 
   function triggerTranslation(lang) {
-    const selectField = document.querySelector(".goog-te-combo");
-    if (selectField) {
-      selectField.value = lang;
-      selectField.dispatchEvent(new Event("change"));
-    } else {
-      console.error("Google Translate Widget not initialized yet.");
-    }
+    const interval = setInterval(() => {
+      const selectField = document.querySelector(".goog-te-combo");
+      if (selectField) {
+        selectField.value = lang;
+        selectField.dispatchEvent(new Event("change"));
+        clearInterval(interval);
+      }
+    }, 100);
 
     localStorage.setItem("selectedLanguage", lang);
     updateDropdownLanguage(lang);
@@ -104,33 +105,25 @@
   }
 
   function hideGoogleTranslateElements() {
-    setTimeout(() => {
-      const translateBanner = document.querySelector('.goog-te-banner-frame');
-      if (translateBanner) translateBanner.style.display = 'none';
+    const translateBanner = document.querySelector('.goog-te-banner-frame');
+    if (translateBanner) translateBanner.style.display = 'none';
 
-      const iframeElements = document.querySelectorAll('iframe:not(#imageSearchModal iframe):not(#imageSearchSidebar iframe)');
-      iframeElements.forEach((iframe) => (iframe.style.display = 'none'));
+    const iframeElements = document.querySelectorAll('iframe:not(#imageSearchModal iframe):not(#imageSearchSidebar iframe)');
+    iframeElements.forEach((iframe) => (iframe.style.display = 'none'));
 
-      const googleElements = document.querySelectorAll('.goog-text-highlight, #goog-gt-tt, .goog-tooltip');
-      googleElements.forEach(el => el.remove());
-    }, 1000);
+    const googleElements = document.querySelectorAll('.goog-text-highlight, #goog-gt-tt, .goog-tooltip');
+    googleElements.forEach(el => el.remove());
   }
 
   function removeTranslateIcon() {
-  const icon = document.getElementById('gtx-trans');
-  if (icon) {
-    icon.remove();
-  }
+    const icon = document.getElementById('gtx-trans');
+    if (icon) icon.remove();
 
-  // Also try to hide any outer wrappers
-  const skip = document.querySelector('.skiptranslate');
-  if (skip) {
-    skip.style.display = 'none';
+    const skip = document.querySelector('.skiptranslate');
+    if (skip) skip.style.display = 'none';
   }
-}
 
   document.addEventListener("DOMContentLoaded", function () {
-    // Handle dropdown click
     document.querySelectorAll(".dropdown-item").forEach((item) => {
       item.addEventListener("click", function () {
         const selectedLang = this.getAttribute("data-lang");
@@ -138,34 +131,29 @@
       });
     });
 
-    // Try removing extra Google Translate overlays regularly
+    // Run initial cleanup
+    hideGoogleTranslateElements();
+    removeTranslateIcon();
+
+    // Run periodically
     setInterval(() => {
       hideGoogleTranslateElements();
       removeTranslateIcon();
     }, 500);
 
-    // Restore language on load
+    // Observe new elements
+    const observer = new MutationObserver(removeTranslateIcon);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Restore last used language
     const storedLang = localStorage.getItem("selectedLanguage");
     if (storedLang) {
       updateDropdownLanguage(storedLang);
+      triggerTranslation(storedLang); // auto-translate on reload
     }
-
-    // Watch for the floating icon
-    const observer = new MutationObserver(removeTranslateIcon);
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    // Repeatedly try to remove it since Google injects it at random times
-    const intervalId = setInterval(removeTranslateIcon, 500);
-
-    // Also observe new DOM nodes in case Translate reappears dynamically
-    const observer = new MutationObserver(removeTranslateIcon);
-    observer.observe(document.body, { childList: true, subtree: true });
-    
-    // Initial cleanup
-    hideGoogleTranslateElements();
-    removeTranslateIcon();
   });
 </script>
+
 
 
 <!-- Google Translate -->
