@@ -106,10 +106,21 @@
 
       const iframeElements = document.querySelectorAll('iframe:not(#imageSearchModal iframe):not(#imageSearchSidebar iframe)');
       iframeElements.forEach((iframe) => (iframe.style.display = 'none'));
+
+      const googleElements = document.querySelectorAll('.goog-text-highlight, #goog-gt-tt, .goog-tooltip');
+      googleElements.forEach(el => el.remove());
     }, 1000);
   }
 
+  function removeTranslateIcon() {
+    const translateIcon = document.getElementById('gtx-trans');
+    if (translateIcon) {
+      translateIcon.remove();
+    }
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
+    // Handle dropdown click
     document.querySelectorAll(".dropdown-item").forEach((item) => {
       item.addEventListener("click", function () {
         const selectedLang = this.getAttribute("data-lang");
@@ -117,31 +128,28 @@
       });
     });
 
+    // Try removing extra Google Translate overlays regularly
     setInterval(() => {
-      const googleElements = document.querySelectorAll('.goog-text-highlight, #goog-gt-tt, .goog-tooltip');
-      googleElements.forEach(el => el.remove());
+      hideGoogleTranslateElements();
+      removeTranslateIcon();
     }, 500);
 
-    hideGoogleTranslateElements();
-
+    // Restore language on load
     const storedLang = localStorage.getItem("selectedLanguage");
     if (storedLang) {
       updateDropdownLanguage(storedLang);
     }
 
-    const removeTranslateIcon = () => {
-      const translateIcon = document.getElementById('gtx-trans');
-      if (translateIcon) {
-        translateIcon.remove();
-      }
-    };
-
+    // Watch for the floating icon
     const observer = new MutationObserver(removeTranslateIcon);
     observer.observe(document.body, { childList: true, subtree: true });
 
+    // Initial cleanup
+    hideGoogleTranslateElements();
     removeTranslateIcon();
   });
 </script>
+
 
 <!-- Google Translate -->
 <script type="text/javascript"
