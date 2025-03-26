@@ -28,6 +28,19 @@
     .goog-te-banner-frame.skiptranslate {
       display: none !important;
     }
+
+    .VIpgJd-ZVi9od-ORHb-OEVmcd {
+      display: none !important;
+    }
+
+    .goog-te-gadget {
+      font-size: 0 !important;
+    }  
+    
+    #gtx-trans {
+      display: none !important;
+    }
+    
   </style>
 </head>
 <body>
@@ -128,6 +141,20 @@
     }
   }
 
+  function removeTranslateIcon() {
+    const icon = document.getElementById('gtx-trans');
+    if (icon) icon.remove();
+
+  // Hide Google inline translate "G" icon in dropdown
+    const bubble = document.querySelector('.VIpgJd-ZVi9od-ORHb-OEVmcd');
+    if (bubble) bubble.remove();
+
+  // Also hide the skiptranslate overlay if it shows
+    const skip = document.querySelector('.skiptranslate');
+    if (skip) skip.style.display = 'none';
+ }
+
+  
   function hideGoogleTranslateElements() {
     setTimeout(() => {
       const translateBanner = document.querySelector('.goog-te-banner-frame');
@@ -158,12 +185,7 @@
       updateDropdownLanguage(storedLang);
     }
 
-    const removeTranslateIcon = () => {
-      const translateIcon = document.getElementById('gtx-trans');
-      if (translateIcon) {
-        translateIcon.remove();
-      }
-    };
+  
 
     const observer = new MutationObserver(removeTranslateIcon);
     observer.observe(document.body, { childList: true, subtree: true });
