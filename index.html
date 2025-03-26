@@ -120,19 +120,26 @@
   }
 
   function triggerTranslation(lang) {
+  const fromLang = 'zh-TW'; // original language of the page
+  const targetValue = `${lang}|${fromLang}`;
+
   const interval = setInterval(() => {
     const selectField = document.querySelector(".goog-te-combo");
     if (selectField) {
-      selectField.value = lang;
-      selectField.dispatchEvent(new Event("change"));
-      clearInterval(interval); // Stop once translated
+      const foundOption = Array.from(selectField.options).find(option => option.value.startsWith(lang));
+      if (foundOption) {
+        selectField.value = foundOption.value;
+        selectField.dispatchEvent(new Event("change"));
+        clearInterval(interval);
+      }
     }
-  }, 100); // Retry every 100ms until widget loads
+  }, 100);
 
   localStorage.setItem("selectedLanguage", lang);
   updateDropdownLanguage(lang);
   hideGoogleTranslateElements();
 }
+
 
 
   function updateDropdownLanguage(lang) {
